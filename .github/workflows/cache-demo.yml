@@ -1,38 +1,38 @@
-name: Cache Dependencies Demo
+name: Python Cache Demo
 
 on:
-  workflow_dispatch:  # Allows manual triggering
+  workflow_dispatch:
 
 jobs:
-  cache-job:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout repo
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Step 2: Set up Python (or Node.js if you prefer)
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: 3.11
+          python-version: "3.11"
 
-      # Step 3: Cache dependencies
       - name: Cache pip dependencies
-        id: prime-cache-3ed78d1
         uses: actions/cache@v4
+        id: cache-deps
         with:
           path: ~/.cache/pip
           key: cache-3ed78d1
-          restore-keys: cache-3ed78d1
+          restore-keys: |
+            cache-3ed78d1
 
-      # Step 4: Install dependencies
-      - name: Install dependencies
+      - name: Prime cache - prime-cache-3ed78d1
         run: |
-          pip install requests
-          echo "Dependencies installed"
+          if [ -d ~/.cache/pip ]; then
+            echo "Cache exists"
+          else
+            echo "Cache miss"
+          fi
 
-      # Step 5: Echo cache result
-      - name: prime-cache-3ed78d1
-        run: echo "Cache restored: ${{ steps.prime-cache-3ed78d1.outputs.cache-hit }}"
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
